@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { LotteryContext } from '../context/LotteryTransaction';
+import { isObjectEmpty } from '../utils';
 
 /**
  * @author
@@ -6,6 +8,33 @@ import React from 'react';
  **/
 
 export const History = ({ lotteryId }) => {
+  const { getAllTicketsOfaLottery, getArrayNumbersOfATicket, currentAccount, currentLottery } =
+    useContext(LotteryContext);
+  const [history, setHistory] = useState([]);
+
+ 
+  useEffect(() => {
+    (async () => {
+      if (currentAccount && currentLottery?.lotteryID) {
+        let ticketIds = await getAllTicketsOfaLottery(parseInt(currentLottery?.lotteryID?._hex), currentAccount);
+        if (ticketIds?.length > 0) {
+          const numsArray = await fecthAllTicketsOfAUser(ticketIds);
+          setHistory([...numsArray]);
+        }
+      }
+    })();
+  }, [currentAccount,currentLottery]);
+
+  const fecthAllTicketsOfAUser = async (ids) => {
+    const fetchPromise = ids.map(async (nums, i) => {
+      const numbers = await getArrayNumbersOfATicket(parseInt(nums._hex));
+      return numbers;
+    });
+
+    const result = Promise.all(fetchPromise);
+    return result;
+  };
+
   return (
     <div className="h-screen flex justify-center items-center text-white w-full">
       <div className="flex flex-col justify-center items-center w-full">
@@ -17,16 +46,24 @@ export const History = ({ lotteryId }) => {
           </div>
 
           <div className="flex mt-5">
-            <div className="basis-1/2 flex">
-                {
-                    [1,2,3,4,5].map((num, index)=>(
-                        <div key={index} className="text-2xl text-purple-900 mr-4">
-                            {num}
-                        </div>
-                    ))
-                }
+            <div className="basis-1/2 flex flex-col">
+              {!!history.length &&
+                history.map((nums, index) => (
+                  <div key={index} className="flex">
+                    {nums.map((num, index) => (
+                      <div
+                        key={index}
+                        className="text-2xl text-purple-900 mr-4"
+                      >
+                        {num}
+                      </div>
+                    ))}
+                  </div>
+                ))}
             </div>
-            <div className="basis-1/2 flex justify-end"><p className='text-2xl text-purple-900 mr-4'> 1</p></div>
+            <div className="basis-1/2 flex justify-end">
+              <p className="text-2xl text-purple-900 mr-4"> {!isObjectEmpty(currentLottery) && parseInt(currentLottery?.lotteryID?._hex) }</p>
+            </div>
           </div>
         </div>
       </div>

@@ -276,7 +276,7 @@
       { "internalType": "uint256[]", "name": "_tokeIds", "type": "uint256[]" }
     ],
     "name": "batchClaimRewards",
-    "outputs": [],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -491,6 +491,13 @@
   },
   {
     "inputs": [],
+    "name": "lotteryIdCounter_",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "maxValidRange_",
     "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
     "stateMutability": "view",
@@ -522,9 +529,14 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "time", "type": "uint256" }
-    ],
+    "inputs": [],
+    "name": "requestId_",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "setCurrentTime",
     "outputs": [],
     "stateMutability": "nonpayable",
