@@ -1,70 +1,21 @@
-# Getting Started with Create React App
+# Lottery
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## `Whitepapper`
+### a. Introduction
+Lottery is a form of lottery that implements Chainlink's VRF to generate secure randomness, providing fairness among participants. Every day will open a lottery lasting for 12 hours, players will be able to buy a limit of 100 tickets once, with no limit on purchases. Each ticket costs 5$ equivalent to CAKE token. Buying tickets in larger quantities will be discounted with corresponding discounts. When paying, users will be able to choose a 6-digit sequence or randomize. The money players buy tickets will pour into the prizing pool – the total prize of a lottery.
 
-## Available Scripts
+### b. Price distribution
+The bonus will be calculated when the sequence of numbers matches the winning sequence starting from the first digit on the left to the right.
 
-In the project directory, you can run:
+Reward structure: (percentage based on prizzing pool)
+- 1 digit: 2%
+- 2 digits: 3%
+- 3 digits: 5%
+- 4 digits: 10%
+- 5 digits: 20%
+- 6 digits: 40%
 
-### `npm start`
+- The remaining 20% of the prizzing pool will be burned
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+In each bonus frame will be divided equally by the number of players who win in that bonus frame
+If a bonus frame does not have any winning players, the total amount of winnings in that bonus frame will be added to the prizzing pool of the next Lottery period.

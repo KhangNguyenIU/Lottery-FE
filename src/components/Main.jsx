@@ -49,12 +49,6 @@ export const Main = ({ handleOpen }) => {
             Buy Ticket
           </button>
         )}
-        {/* <button
-          onClick={getCurrentLottery}
-          className="px-4 py-3 bg-purple-400 mt-5 text-2xl font-bold rounded-md"
-        >
-          Tests
-        </button> */}
       </div>
     </div>
   );

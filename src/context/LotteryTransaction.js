@@ -1,14 +1,17 @@
 import React, { createContext, useEffect, useState } from 'react'
-
 import { ethers } from 'ethers'
+
 import lotteryAbi from '../abi/LotteryAbi.json'
 import lotteryNFTAbi from '../abi/LotteryNFTAbi.json'
-import cakeAbi from '../abi/CAKEAbi.json'
+import cakeAbi from '../abi/CakeAbi.json'
 import { LOTTERYNFT_ADDRESS, LOTTERY_ADDRESS, CAKE_ADDRESS, NOTIFICATION_WARNING, NOTIFICATION_ERROR } from '../constant'
+
 const { ethereum } = window
+
 export const LotteryContext = createContext()
 
-const getEthereumContract = (address, abi) => {
+
+const getContract = (address, abi) => {
     const provider = new ethers.providers.Web3Provider(ethereum)
     const signer = provider.getSigner()
     const transactionContract = new ethers.Contract(
@@ -22,7 +25,6 @@ export const LotteryProvider = ({ children }) => {
     const [currentAccount, setCurrentAccount] = useState("")
     const [currentLottery, setCurrentLottery] = useState({})
     const [loading, isLoading] = useState(false)
-    const [test, setTest] = useState("")
     const [notify, setNotify] = useState({
         message: "",
         type: ""
@@ -33,108 +35,96 @@ export const LotteryProvider = ({ children }) => {
         setNotify({ message, type })
     }
 
-    const getPrize =async ()=>{
-        try {
-            checkEthereum()
-            const cakeContract = getEthereumContract(CAKE_ADDRESS, cakeAbi)
-            cakeContract.on("")
-            
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
-    
+
     const batchClaimTickets = async (lotteryId, curAddress) => {
         try {
-            if (!curAddress || !lotteryId) {
+            // validate condition
+            if (!curAddress || !lotteryId)
                 return
-            }
-            checkEthereum()
-            const lotteryContract = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
-            const lotteryNFTContract = getEthereumContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
+            checkMetamask()
+
+            const lotteryContract = getContract(LOTTERY_ADDRESS, lotteryAbi)
+            const lotteryNFTContract = getContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
+
+            // get all tickets id of a Lottery
             let ticketIds = await lotteryNFTContract.getUserTickets(lotteryId, curAddress)
+
+            // convert hex to int
             ticketIds = ticketIds.map((ticket, i) => parseInt(ticket._hex))
-            console.log({ lotteryId, ticketIds })
+
+            // claim above tickets
             const result = await lotteryContract.batchClaimRewards(lotteryId, ticketIds)
             return parseInt(result.value._hex)
         } catch (error) {
             changeNotification("Fail to claim tickets", NOTIFICATION_ERROR)
-            console.log(error)
         }
     }
 
     const getLotteryInfo = async (id) => {
         try {
-            checkEthereum()
-            const lotteryAddress = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
+            checkMetamask()
+            const lotteryAddress = getContract(LOTTERY_ADDRESS, lotteryAbi)
             const info = await lotteryAddress.getBasicLottoInfo(id)
             return info
         } catch (error) {
-
+            throw new Error("Fail to get Lottery info")
         }
     }
 
     const getCostOfBuyingTicket = async (lotteryId, numberOfTickets) => {
         try {
-            checkEthereum()
-            const lotteryAddress = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
+            checkMetamask()
+            const lotteryAddress = getContract(LOTTERY_ADDRESS, lotteryAbi)
             const cost = await lotteryAddress.costToBuyTickets(lotteryId, numberOfTickets)
 
             return cost
         } catch (error) {
-            // changeNotification("Error", NOTIFICATION_ERROR)
-            console.log(error)
+            throw new Error("Fail to get Cost of a ticket")
         }
     }
 
     const getCurrentLottery = async () => {
         try {
-            checkEthereum()
-            const lotteryContract = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
+            checkMetamask()
+            const lotteryContract = getContract(LOTTERY_ADDRESS, lotteryAbi)
             const curId = parseInt(await lotteryContract.lotteryIdCounter_())
             const cur = await lotteryContract.getBasicLottoInfo(curId)
-            if (cur) {
+            if (cur)
                 setCurrentLottery(cur)
-            }
+
         } catch (error) {
             changeNotification("No lottery found", NOTIFICATION_ERROR)
-            console.log(error)
         }
     }
 
     const getAllTicketsOfaLottery = async (lotteryId, userAddress) => {
         try {
-            checkEthereum()
-            const lotteryNFTContract = await getEthereumContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
-            // console.log({currentAccount})
+            checkMetamask()
+            const lotteryNFTContract = await getContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
             if (currentAccount) {
-                // console.log("-----", lotteryId, currentAccount)
                 const tickets = await lotteryNFTContract.getUserTickets(lotteryId, userAddress)
                 return tickets
             }
         } catch (error) {
             changeNotification("No ticket found", NOTIFICATION_ERROR)
-            console.log(error)
         }
     }
 
     const getArrayNumbersOfATicket = async ticketId => {
         try {
-            checkEthereum()
-            const lotteryNFTContract = await getEthereumContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
+            checkMetamask()
+            const lotteryNFTContract = await getContract(LOTTERYNFT_ADDRESS, lotteryNFTAbi)
             const nums = await lotteryNFTContract.getTicketNumbers(ticketId)
             return nums
         } catch (error) {
-            // changeNotification("No ethereum object", NOTIFICATION_ERROR)
-
-            console.log(error)
+            throw new Error("Fail to get numbers of a ticket")
         }
     }
 
     const checkIfWalletIsConnected = async () => {
         try {
-            checkEthereum()
+            checkMetamask()
             const accounts = await ethereum.request({ method: "eth_accounts" })
             if (accounts.length) {
                 setCurrentAccount(accounts[0])
@@ -151,14 +141,13 @@ export const LotteryProvider = ({ children }) => {
 
     const connectWallet = async () => {
         try {
-            checkEthereum();
+            checkMetamask();
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
             setCurrentAccount(accounts[0]);
         } catch (error) {
             changeNotification("No ethereum object", NOTIFICATION_ERROR)
-
             throw new Error("No ethereum objecy");
         }
     };
@@ -169,20 +158,19 @@ export const LotteryProvider = ({ children }) => {
             return
         }
         try {
-            checkEthereum()
-            const lotteryAddress = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
-            const cakeContract = getEthereumContract(CAKE_ADDRESS, cakeAbi)
+            checkMetamask()
+            const lotteryAddress = getContract(LOTTERY_ADDRESS, lotteryAbi)
+            const cakeContract = getContract(CAKE_ADDRESS, cakeAbi)
+
             const cost = await lotteryAddress.costToBuyTickets(lotteryId, numberOfTickets)
-            // await cost.wait()
-            // console.log("cost ", parseInt(cost._hex), cakeContract)
+
             const approved = await cakeContract.approve(LOTTERY_ADDRESS, String(parseInt(cost._hex)))
             await approved.wait()
+            // wait unitl approved finish
             if (approved) {
-            
                 const result = await lotteryAddress.batchBuyLottoTicket(lotteryId, numberOfTickets, chosenNumbersForEachTicket)
             }
         } catch (error) {
-            // console.log(error)
             changeNotification("Failed to buy ticket", NOTIFICATION_ERROR)
             throw new Error("Error")
         }
@@ -190,23 +178,23 @@ export const LotteryProvider = ({ children }) => {
 
     const testApprove = async () => {
         try {
-            checkEthereum()
-            const cakeContract = getEthereumContract(CAKE_ADDRESS, cakeAbi)
+            checkMetamask()
+            const cakeContract = getContract(CAKE_ADDRESS, cakeAbi)
             const approved = await cakeContract.approve("0x2e6059c78Ea7153e93ad3BAFda30B70b7D5dD623", "10000000000000000000")
         } catch (error) {
-            console.log(error)
+            // console.log(error)
+            throw new Error("Fail")
         }
     }
     const getTime = async () => {
         try {
-            const lotteryAddress = getEthereumContract(LOTTERY_ADDRESS, lotteryAbi)
-
+            const lotteryContact = getContract(LOTTERY_ADDRESS, lotteryAbi)
         } catch (error) {
             throw new Error("Error")
         }
     }
 
-    const checkEthereum = () => {
+    const checkMetamask = () => {
         if (!ethereum) {
             alert("Please enable metamask")
             throw new Error("Metamask is not installed")
@@ -217,7 +205,7 @@ export const LotteryProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             await checkIfWalletIsConnected()
-            const temp = await getLotteryInfo()
+            await getLotteryInfo()
         })()
     }, [])
 

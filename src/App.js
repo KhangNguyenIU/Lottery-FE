@@ -10,23 +10,25 @@ import { LotteryContext } from './context/LotteryTransaction';
 import { Notification } from './components/Notification';
 
 function App() {
-    const { checkIfWalletIsConnected, connectWallet, getLotteryInfo, currentLottery,testApprove,changeNotification, getCurrentLottery } = useContext(LotteryContext)
+    const { currentLottery, getCurrentLottery } = useContext(LotteryContext)
+
     const [open, setOpen] = useState(false)
     const handleClose = () => setOpen(false)
     const handleOpen = () => setOpen(true)
 
-    useEffect(()=>{
+    useEffect(() => {
         getCurrentLottery()
-    },[])
+    }, [])
+
     return (
         <div className="App">
             <Main handleOpen={handleOpen} />
             <Claim />
             <History />
             <Modal open={Boolean(open && currentLottery?.lotteryID)} handleClose={handleClose}>
-                <BuyTicket handleClose={handleClose}/>
+                <BuyTicket handleClose={handleClose} />
             </Modal>
-            <Notification/>
+            <Notification />
         </div>
     );
 }

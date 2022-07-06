@@ -15,6 +15,7 @@ export const BuyTicket = ({ handleClose }) => {
     changeNotification,
     getCurrentLottery,
   } = useContext(LotteryContext);
+  
   const [cost, setCost] = useState(0);
   const [input, setInput] = useState(0);
   const [loading, setLoading] = useState(false);

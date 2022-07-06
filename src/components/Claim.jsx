@@ -6,23 +6,23 @@ import { LotteryContext } from '../context/LotteryTransaction';
  * @function Main
  **/
 
-export const Claim = ({ lotteryId }) => {
+export const Claim = ({}) => {
   const {
-    checkIfWalletIsConnected,
     connectWallet,
     currentAccount,
     batchClaimTickets,
     currentLottery,
-    changeNotification
+    changeNotification,
   } = useContext(LotteryContext);
 
-  const claim =  async() => {
+  const claim = async () => {
     try {
       if (currentLottery?.lotteryID && currentAccount) {
         const prize = await batchClaimTickets(
-          parseInt(currentLottery?.lotteryID?._hex), currentAccount
+          parseInt(currentLottery?.lotteryID?._hex),
+          currentAccount
         );
-        changeNotification(`You win ${prize}`, "success")
+        changeNotification(`You win ${prize}`, 'success');
       }
     } catch (error) {}
   };
@@ -35,8 +35,9 @@ export const Claim = ({ lotteryId }) => {
         </h3>
         {currentAccount ? (
           <button
-          onClick={claim} 
-          className="px-4 py-3 bg-purple-400 mt-5 text-2xl font-bold rounded-md">
+            onClick={claim}
+            className="px-4 py-3 bg-purple-400 mt-5 text-2xl font-bold rounded-md"
+          >
             Claim
           </button>
         ) : (
@@ -47,11 +48,7 @@ export const Claim = ({ lotteryId }) => {
             Connect Wallet
           </button>
         )}
-        {/* <button
-          onClick={claim}
-        >
-          TEST
-        </button> */}
+   
       </div>
     </div>
   );
