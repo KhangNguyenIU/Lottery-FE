@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { LotteryContext } from '../context/LotteryTransaction';
 import { isObjectEmpty } from '../utils';
+import { useQuery } from 'react-query'
 
 /**
  * @author
@@ -8,22 +9,43 @@ import { isObjectEmpty } from '../utils';
  **/
 
 export const History = ({ lotteryId }) => {
-  const { getAllTicketsOfaLottery, getArrayNumbersOfATicket, currentAccount, currentLottery } =
-    useContext(LotteryContext);
+  const {
+    getAllTicketsOfaLottery,
+    getArrayNumbersOfATicket,
+    currentAccount,
+    currentLottery,
+  } = useContext(LotteryContext);
   const [history, setHistory] = useState([]);
 
- 
-  useEffect(() => {
-    (async () => {
-      if (currentAccount && currentLottery?.lotteryID) {
-        let ticketIds = await getAllTicketsOfaLottery(parseInt(currentLottery?.lotteryID?._hex), currentAccount);
-        if (ticketIds?.length > 0) {
-          const numsArray = await fecthAllTicketsOfAUser(ticketIds);
-          setHistory([...numsArray]);
-        }
-      }
-    })();
-  }, [currentAccount,currentLottery]);
+  const fetchTickets = async (lotteryID) => {
+    if (!lotteryID ) return;
+    let ticketIds = await getAllTicketsOfaLottery(
+      parseInt(currentLottery?.lotteryID?._hex),
+      currentAccount
+    );
+    if (ticketIds?.length > 0) {
+      const numsArray = await fecthAllTicketsOfAUser(ticketIds);
+      setHistory([...numsArray]);
+      return numsArray
+    }
+  };
+  const {data, status} = useQuery(["history",currentLottery?.lotteryID ], fetchTickets)
+//   useEffect(() => {
+//     (async () => {
+//       if (currentAccount && currentLottery?.lotteryID) {
+//         let ticketIds = await getAllTicketsOfaLottery(
+//           parseInt(currentLottery?.lotteryID?._hex),
+//           currentAccount
+//         );
+//         if (ticketIds?.length > 0) {
+//           const numsArray = await fecthAllTicketsOfAUser(ticketIds);
+//           setHistory([...numsArray]);
+//         }
+//       }
+//     })();
+//   }, [currentAccount, currentLottery]);
+
+
 
   const fecthAllTicketsOfAUser = async (ids) => {
     const fetchPromise = ids.map(async (nums, i) => {
@@ -62,7 +84,11 @@ export const History = ({ lotteryId }) => {
                 ))}
             </div>
             <div className="basis-1/2 flex justify-end">
-              <p className="text-2xl text-purple-900 mr-4"> {!isObjectEmpty(currentLottery) && parseInt(currentLottery?.lotteryID?._hex) }</p>
+              <p className="text-2xl text-purple-900 mr-4">
+                {' '}
+                {!isObjectEmpty(currentLottery) &&
+                  parseInt(currentLottery?.lotteryID?._hex)}
+              </p>
             </div>
           </div>
         </div>

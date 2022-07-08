@@ -1,14 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { QueryClientProvider, QueryClient } from 'react-query';
 import App from './App';
 import { LotteryProvider } from './context/LotteryTransaction';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const queryClient = new QueryClient()
+
 root.render(
     <React.StrictMode>
-        <LotteryProvider>
-            <App /> 
-        </LotteryProvider>
+        <QueryClientProvider client={queryClient}>
+            <LotteryProvider>
+                <App />
+            </LotteryProvider>
+        </QueryClientProvider>
     </React.StrictMode>
 );
 

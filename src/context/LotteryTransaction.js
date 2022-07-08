@@ -55,6 +55,7 @@ export const LotteryProvider = ({ children }) => {
 
             // claim above tickets
             const result = await lotteryContract.batchClaimRewards(lotteryId, ticketIds)
+            await result.wait()
             return parseInt(result.value._hex)
         } catch (error) {
             changeNotification("Fail to claim tickets", NOTIFICATION_ERROR)
@@ -202,10 +203,24 @@ export const LotteryProvider = ({ children }) => {
 
     }
 
+    const setLotteryInfo = async()=>{
+        try{
+            const lotteryId =  await getCurrentLottery()
+            const lotteryInfo = await getLotteryInfo(lotteryId)
+            if(lotteryInfo){
+                
+                setCurrentLottery(lotteryId)
+            }
+        }catch(error){
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         (async () => {
             await checkIfWalletIsConnected()
             await getLotteryInfo()
+
         })()
     }, [])
 
@@ -213,7 +228,7 @@ export const LotteryProvider = ({ children }) => {
         <LotteryContext.Provider
             value={{
                 checkIfWalletIsConnected, currentAccount, connectWallet, getLotteryInfo, getTime,
-                getCurrentLottery, currentLottery, getCostOfBuyingTicket, buyTicket, getAllTicketsOfaLottery, getArrayNumbersOfATicket, batchClaimTickets, testApprove, notify,
+                getCurrentLottery, currentLottery, getCostOfBuyingTicket, buyTicket, getAllTicketsOfaLottery, getArrayNumbersOfATicket, batchClaimTickets, testApprove, notify,setLotteryInfo,
                 changeNotification
             }}
         >

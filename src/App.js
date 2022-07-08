@@ -16,9 +16,9 @@ function App() {
     const handleClose = () => setOpen(false)
     const handleOpen = () => setOpen(true)
 
-    useEffect(() => {
-        getCurrentLottery()
-    }, [])
+    // useEffect(() => {
+    //     getCurrentLottery()
+    // }, [])
 
     return (
         <div className="App">
@@ -26,7 +26,7 @@ function App() {
             <Claim />
             <History />
             <Modal open={Boolean(open && currentLottery?.lotteryID)} handleClose={handleClose}>
-                <BuyTicket handleClose={handleClose} />
+               { open && <BuyTicket handleClose={handleClose} />}
             </Modal>
             <Notification />
         </div>

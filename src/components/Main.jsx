@@ -1,8 +1,8 @@
-import moment from 'moment';
 import React, { useContext } from 'react';
 import { LotteryStatus } from '../constant';
 import { LotteryContext } from '../context/LotteryTransaction';
 import { timeLeft } from '../utils';
+import { useQuery } from 'react-query';
 
 /**
  * @author
@@ -10,11 +10,13 @@ import { timeLeft } from '../utils';
  **/
 
 export const Main = ({ handleOpen }) => {
-  const { getCurrentLottery, currentLottery } = useContext(LotteryContext);
+  const { setLotteryInfo, currentLottery } = useContext(LotteryContext);
+  const { data, _ } = useQuery('currentLottery', setLotteryInfo);
 
   return (
     <div className="h-screen flex justify-center items-center text-white">
       <div className="flex flex-col justify-center items-center">
+        <h3 className="text-white">{data?.data?.lotteryID}</h3>
         <h1 className="text-5xl font-bold ">
           currentLottery #{' '}
           {currentLottery ? parseInt(currentLottery?.lotteryID?._hex) : ''}

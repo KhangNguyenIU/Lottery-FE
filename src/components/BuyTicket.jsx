@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { LotteryContext } from '../context/LotteryTransaction';
-import { generateNrandomArray, test } from '../utils';
-
+import { generateNrandomArray } from '../utils';
+import { QueryClient } from 'react-query';
 /**
  * @author
  * @function BuyTicket
@@ -13,9 +13,10 @@ export const BuyTicket = ({ handleClose }) => {
     currentLottery,
     buyTicket,
     changeNotification,
-    getCurrentLottery,
   } = useContext(LotteryContext);
-  
+
+  const queryClient = QueryClient();
+
   const [cost, setCost] = useState(0);
   const [input, setInput] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -52,12 +53,9 @@ export const BuyTicket = ({ handleClose }) => {
           input,
           chosenNumbersOfTickets
         );
-        if (response) {
-          await getCurrentLottery();
-          setLoading(false);
-          changeNotification(`Buy ${input} tickets success`, 'success');
-          handleClose();
-        }
+        changeNotification(`Buy ${input} tickets success`, 'success');
+        queryClient.invalidateQueries(["history",currentLottery?.lotteryID ]);
+        handleClose();
       }
     } catch (error) {
       // console.log(error)
